@@ -38,7 +38,7 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
 
             $this->text_domain = 'certus_connector';
 
-            $this->api_url = 'https://api.certus.com/inbound/';
+            $this->api_url = 'http://54.252.147.238:8080/deliveries';
             
             if ( is_admin() ) {
                 $this->settings_url = admin_url('tools.php?page=certus_connector');
@@ -227,23 +227,19 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
         }
 
         public function post_orders_to_certus ( &$orders ) {
-          //testing  
-          var_dump($orders);
-          exit;
             if (empty($orders)) {
                 return true;
             }
-            
             $result = wp_remote_post( $this->api_url, 
                         array('headers' => array(
                                 'Content-Type' => 'application/json',
-                                'Authorization' => 'Basic ' . base64_encode( $this->email_address . ':' . $this->api_token ),
+                                //'Authorization' => 'Basic ' . base64_encode( $this->email_address . ':' . $this->api_token ),
                                 'User-Agent' => 'Certus Connector/'.$this->version
                                 ),
                                'timeout' => 120, 
                                'body' => json_encode($orders)
                             )
-                        );
+                          );
             if (is_wp_error( $result )) {
                 return $result;
             }

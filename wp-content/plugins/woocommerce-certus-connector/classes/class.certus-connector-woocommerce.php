@@ -90,7 +90,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                  }
                  
 
-
                     //Query to get the Order_items
                     
                     $item_details = array();
@@ -111,7 +110,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
 
                     $variation_ids = array();
                     $product_ids = array();
-                    
                     if ( $results_cart_items_count > 0 ) {
                         
                         foreach ( $results_cart_items as $cart_item ) {
@@ -286,6 +284,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $date_gmt  = $order_detail['date'];
                             $dateInGMT = date('m/d/Y', (int)strtotime($date_gmt));
                             $timeInGMT = date('h:i:s A', (int)strtotime($date_gmt));
+                            $datetimeInGMT = date('Y-m-d h:i:s A', (int)strtotime($date_gmt));
                             
                             if ($order_status[$order_detail['term_taxonomy_id']] == "on-hold" || $order_status[$order_detail['term_taxonomy_id']] == "pending" || $order_status[$order_detail['term_taxonomy_id']] == "failed") {
                                     $order_status_display = 'Pending';
@@ -296,68 +295,47 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             }
 
                             // $response['date_time'] = $date_gmt;
-                            $response ['Date'] = $dateInGMT;
-                            $response ['Time'] = $timeInGMT;
-                            $response ['Time_Zone'] = 'GMT';
+                            $response['customer_name'] = $order_items[$order_id]['_billing_first_name'] . ' ' . $order_items[$order_id]['_billing_last_name'];
+                            $response['shipping_address'] = 'Address';
+                            $response['customer_email'] = $order_items[$order_id]['_billing_email'];
+                            $response['order_placed_timestamp'] = $datetimeInGMT;
+                            $response['desired_deliverywindow'] = '';
+                            $response['client_id'] = '222';
+                            $response['store_id'] = '111';
+                            $response['piece_count'] = $item_details[$order_id]['tot_qty'];
+                            $response['client_internal_order_id'] = $order_id;
+                            $response['total_price'] = $order_total;
+                            $response['total_tax'] = isset( $order_items[$order_id]['_order_tax'] ) ? round ( $order_items[$order_id]['_order_tax'], 2 ) : 0.00;;
+                            $response['total_item_adjustments'] = $item_details[$order_id]['tot_qty'];
+                            $response['non_apportionable_adjustments'] = '';
+                            $response['grand_total'] = $order_total;
+                            $response['order_status'] = ucfirst( $order_status_display );
+                            $response['payment_amount'] = $order_total;
                             
-                            $response ['Source'] = $this->name;
-                            $response ['Name'] = $order_items[$order_id]['_billing_first_name'] . ' ' . $order_items[$order_id]['_billing_last_name'];
-                            // $response ['Type'] = ( $status == "refunded") ? 'Refund' : 'Shopping Cart Payment Received';
-                            $response ['Type'] = 'Shopping Cart Payment Received';
+                            //$response ['Type'] = 'Shopping Cart Payment Received';
 
 
 
-                            $response ['Status'] = ucfirst( $order_status_display );
 
-                            $response ['Currency'] = $order_items[$order_id]['_order_currency'];
+                            //$response ['currency'] = $order_items[$order_id]['_order_currency'];
 
-                            $response ['Gross'] = $order_total;
-                            $response ['Fee'] = 0.00;
-                            $response ['Net'] = $order_total;
 
-                            $response ['From_Email_Address'] = $order_items[$order_id]['_billing_email'] ;
-                            $response ['To_Email_Address'] = '';
-                            $response ['Transaction_ID'] = $order_id ;
-                            $response ['Counterparty_Status'] = '';
-                            $response ['Address_Status'] = '';
-                            $response ['Item_Title'] = 'Shopping Cart';
-                            $response ['Item_ID'] = 0; // Set to 0 for main Order Transaction row
-                            $response ['Shipping_and_Handling_Amount'] = ( isset( $order_items[$order_id]['_order_shipping'] ) ) ? round ( $order_items[$order_id]['_order_shipping'], 2 ) : 0.00;
-                            $response ['Insurance_Amount'] = '';
-                            $response ['Discount'] = isset( $order_items[$order_id]['_order_discount'] ) ? round ( $order_items[$order_id]['_order_discount'], 2 ) : 0.00;
+                            //$response ['Item_Title'] = 'Shopping Cart';
+                            //$response ['Item_ID'] = 0; // Set to 0 for main Order Transaction row
+                            //$response ['Discount'] = isset( $order_items[$order_id]['_order_discount'] ) ? round ( $order_items[$order_id]['_order_discount'], 2 ) : 0.00;
                             
-                            $response ['Sales_Tax'] = isset( $order_items[$order_id]['_order_tax'] ) ? round ( $order_items[$order_id]['_order_tax'], 2 ) : 0.00;
 
-                            $response ['Option_1_Name'] = '';
-                            $response ['Option_1_Value'] = '';
-                            $response ['Option_2_Name'] = '';
-                            $response ['Option_2_Value'] = '';
-                            
-                            $response ['Auction_Site'] = '';
-                            $response ['Buyer_ID'] = '';
-                            $response ['Item_URL'] = '';
-                            $response ['Closing_Date'] = '';
-                            $response ['Escrow_ID'] = '';
-                            $response ['Invoice_ID'] = '';
-                            $response ['Reference_Txn_ID'] = '';
-                            $response ['Invoice_Number'] = '';
-                            $response ['Custom_Number'] = '';
-                            $response ['Quantity'] = $item_details[$order_id]['tot_qty']; 
-                            $response ['Receipt_ID'] = '';
-
-                            $response ['Balance'] = '';
-                            $response ['Note'] = $order_detail['order_note'] ;
-                            $response ['Address_Line_1'] = ( isset( $order_items[$order_id]['_billing_address_1'] ) ) ? $order_items[$order_id]['_billing_address_1'] : '';
-                            $response ['Address_Line_2'] = isset( $order_items[$order_id]['_billing_address_2'] ) ? $order_items[$order_id]['_billing_address_2'] : '';
-                            $response ['Town_City'] = isset( $order_items[$order_id]['_billing_city'] ) ? $order_items[$order_id]['_billing_city'] : '' ;
-                            $response ['State_Province'] = $order_items[$order_id]['_billing_state'];
-                            $response ['Zip_Postal_Code'] = isset( $order_items[$order_id]['_billing_postcode'] ) ? $order_items[$order_id]['_billing_postcode'] : '';
-                            $response ['Country'] = isset( $order_items[$order_id]['_billing_country'] ) ? $order_items[$order_id]['_billing_country'] : '';
-                            $response ['Contact_Phone_Number'] = isset( $order_items[$order_id]['_billing_phone']) ? $order_items[$order_id]['_billing_phone'] : '';
-                            $response ['Subscription_ID'] = '';
+                            //$response ['Note'] = $order_detail['order_note'] ;
+                            //$response ['Address_Line_1'] = ( isset( $order_items[$order_id]['_billing_address_1'] ) ) ? $order_items[$order_id]['_billing_address_1'] : '';
+                            //$response ['Address_Line_2'] = isset( $order_items[$order_id]['_billing_address_2'] ) ? $order_items[$order_id]['_billing_address_2'] : '';
+                            //$response ['Town_City'] = isset( $order_items[$order_id]['_billing_city'] ) ? $order_items[$order_id]['_billing_city'] : '' ;
+                            //$response ['State_Province'] = $order_items[$order_id]['_billing_state'];
+                            //$response ['Zip_Postal_Code'] = isset( $order_items[$order_id]['_billing_postcode'] ) ? $order_items[$order_id]['_billing_postcode'] : '';
+                            //$response ['Country'] = isset( $order_items[$order_id]['_billing_country'] ) ? $order_items[$order_id]['_billing_country'] : '';
+                            //$response ['Contact_Phone_Number'] = isset( $order_items[$order_id]['_billing_phone']) ? $order_items[$order_id]['_billing_phone'] : '';
 
                             if((! empty($params['order_id'])) && $order_status[$order_detail['term_taxonomy_id']] == "refunded") {
-
+/*
                                 $date_gmt_modified = $order_detail['modified_date'];
 
                                 $response ['Date'] = date('m/d/Y', (int)strtotime($date_gmt_modified));
@@ -369,32 +347,33 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                 $response ['Net'] = -$order_total;
                                 $response ['Transaction_ID'] = $order_id . '_R';
                                 $response ['Reference_Txn_ID'] = $order_id;
-
-                                $transactions [] = $response;
+ */
+                                //$transactions [] = $response;
 
                             } else {
 
-                                $transactions [] = $response;
+                              //$transactions [] = $response;
+                              $delivery_items_attributes = array();
 
                                 foreach( $item_details[$order_id]['cart_items'] as $cart_item ) {
 
                                     $order_item = array();
-                                    $order_item ['Type'] = 'Shopping Cart Item';
-                                    $order_item ['Item_Title'] = $cart_item['product_name'];
+                                    //$order_item ['Type'] = 'Shopping Cart Item';
+                                    $order_item ['item_title'] = $cart_item['product_name'];
                                     
 
                                     if ( $cart_item['_variation_id'] != '' ) {
-                                        $order_item ['Item_ID'] = (isset( $products_sku[$cart_item['_variation_id']] )) ? $products_sku[$cart_item['_variation_id']] : $cart_item['_variation_id'];
+                                        $order_item ['client_sku'] = (isset( $products_sku[$cart_item['_variation_id']] )) ? $products_sku[$cart_item['_variation_id']] : $cart_item['_variation_id'];
                                         $product_id = $cart_item['_variation_id'];
                                     } else {
-                                        $order_item ['Item_ID'] = (isset( $products_sku[$cart_item['_product_id']] )) ? $products_sku[$cart_item['_product_id']] : $cart_item['_product_id'];
+                                        $order_item ['client_sku'] = (isset( $products_sku[$cart_item['_product_id']] )) ? $products_sku[$cart_item['_product_id']] : $cart_item['_product_id'];
                                         $product_id = $cart_item['_product_id'];
                                     }
 
                                     
-                                    $order_item ['Gross'] = round ( $cart_item['_line_total'], 2 );
-                                    $order_item ['Quantity'] = $cart_item['_qty'];
-
+                                    $order_item ['price'] = round ( $cart_item['_line_total'], 2 );
+                                    $order_item ['quantity'] = $cart_item['_qty'];
+/*
                                     if ( isset($variations[$product_id]) ) {
                                         if ( $variations[$product_id][0]['option1_name'] != 'attributes' ) {
                                             $order_item ['Option_1_Name'] = $variations[$product_id][0]['option1_name'];
@@ -406,9 +385,9 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                             $order_item ['Option_1_Value'] = $variations[$product_id][0]['option1_value'];
                                         }    
                                     }
-                                    
-                                    $transactions [] = array_merge ( $response, $order_item );
-
+ */                                    
+                                    //$transactions [] = array_merge ( $response, $order_item );
+/*
                                     if( $order_status[$order_detail['term_taxonomy_id']] == "refunded"){
                                         $date_gmt_modified = $order_detail['modified_date'];
 
@@ -425,13 +404,16 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                         $transactions [] = $response;
 
                                     }
+ */
+                                  $delivery_items_attributes[] = $order_item;
                                 }
+                              $response ['delivery_items_attributes'] = $delivery_items_attributes;
+                              $transactions ['delivery'] = $response;
                             }
                         }
                     } else {
                         
                     }
-            
                     if ( empty($params['order_id']) ) {
                         $order_count = (is_array($results_order_details)) ? count($results_order_details) : 0 ;              
                         $params[ $this->name ] = array('count' => $order_count, 'last_start_limit' => $start_limit, 'data' => $transactions );
