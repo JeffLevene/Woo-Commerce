@@ -38,7 +38,7 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
 
             $this->text_domain = 'certus_connector';
 
-            $this->api_url = 'http://54.252.147.238:8080/deliveries';
+            $this->api_url = 'http://still-waters-3188.herokuapp.com/deliveries';
             
             if ( is_admin() ) {
                 $this->settings_url = admin_url('tools.php?page=certus_connector');

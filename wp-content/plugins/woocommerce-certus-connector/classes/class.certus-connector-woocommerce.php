@@ -298,17 +298,17 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $response['customer_name'] = $order_items[$order_id]['_billing_first_name'] . ' ' . $order_items[$order_id]['_billing_last_name'];
                             $response['shipping_address'] = 'Address';
                             $response['customer_email'] = $order_items[$order_id]['_billing_email'];
-                            $response['order_placed_timestamp'] = $datetimeInGMT;
-                            $response['desired_deliverywindow'] = '';
+                            $response['placed_at'] = $datetimeInGMT;
+                            $response['desired_delivery_window'] = '';
                             $response['client_id'] = '222';
                             $response['store_id'] = '111';
-                            $response['piece_count'] = $item_details[$order_id]['tot_qty'];
-                            $response['client_internal_order_id'] = $order_id;
-                            $response['total_price'] = $order_total;
-                            $response['total_tax'] = isset( $order_items[$order_id]['_order_tax'] ) ? round ( $order_items[$order_id]['_order_tax'], 2 ) : 0.00;;
-                            $response['total_item_adjustments'] = $item_details[$order_id]['tot_qty'];
-                            $response['non_apportionable_adjustments'] = '';
-                            $response['grand_total'] = $order_total;
+                            $response['order_piece_count'] = $item_details[$order_id]['tot_qty'];
+                            $response['order_id'] = $order_id;
+                            $response['order_total_price'] = $order_total;
+                            $response['order_total_tax'] = isset( $order_items[$order_id]['_order_tax'] ) ? round ( $order_items[$order_id]['_order_tax'], 2 ) : 0.00;;
+                            $response['order_total_adjustments'] = $item_details[$order_id]['tot_qty'];
+                            $response['order_non_apportionable_adjustments'] = '';
+                            $response['order_grand_total'] = $order_total;
                             $response['order_status'] = ucfirst( $order_status_display );
                             $response['payment_amount'] = $order_total;
                             
@@ -359,7 +359,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
 
                                     $order_item = array();
                                     //$order_item ['Type'] = 'Shopping Cart Item';
-                                    $order_item ['item_title'] = $cart_item['product_name'];
+                                    $order_item ['product_name'] = $cart_item['product_name'];
                                     
 
                                     if ( $cart_item['_variation_id'] != '' ) {
