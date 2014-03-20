@@ -244,15 +244,16 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
                 return $result;
             }
             else {
-                $server_response_default = array('ACK' => 'Failure', 'MESSAGE' => __('Unknown Response', $this->text_domain) );
+                $order = new WC_Order($orders["delivery"]["order_id"]);
                 $server_response = json_decode( $result['body'], true);
-                $server_response = array_merge( $server_response_default, $server_response );
                 $server_response_code = $result['response']['code'];
-
-                if ($server_response_code == 200 && $server_response['ACK'] == "Success") {
+                if ($server_response_code == 200 && $server_response['status'] == 'ok') {
+                    $order->update_status( 'in_fulfillment' );
                     return true;
                 }
-                return new WP_Error( $server_response_code, $server_response['MESSAGE']);
+                else {
+                    $order->update_status( 'out_fulfillment', $result['response']['message'] );
+                    return new WP_Error( $server_response_code, $result['response']['message']);                }
             }
         }
     }
