@@ -42,12 +42,12 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
             if ( empty($params['order_id']) ) {
                 $start_limit = (isset($params[ $this->name ]['start_limit'])) ? $params[ $this->name ]['start_limit'] : 0;
                 $batch_limit = (isset($params['limit'])) ? $params['limit'] : 50;    
+                $cond = 'AND term_relationships.term_taxonomy_id = 60';
             } else {
                 $start_limit = 0;
                 $batch_limit = 1;
                 $cond = 'AND posts.ID IN(' .intval($params['order_id']). ')'; 
             }
-            
             
             //Code to get all the term_names along with the term_taxonomy_id in an array
             $query_order_status = "SELECT terms.name as order_status,
@@ -57,7 +57,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                     WHERE taxonomy LIKE 'shop_order_status'";
                                     
             $results_order_status = $wpdb->get_results( $query_order_status, 'ARRAY_A' );
-
             $order_status = array();
 
             foreach ($results_order_status as $results_order_status1) {
@@ -77,7 +76,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                                 $cond
                                         GROUP BY posts.ID
                                         LIMIT ". $start_limit .",". $batch_limit;
-
              $results_order_details = $wpdb->get_results( $query_order_details, 'ARRAY_A' );
              $results_order_details_count = $wpdb->num_rows;
              
@@ -89,7 +87,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                      $order_ids[] = $results_order_detail['id'];
                  }
                  
-
                     //Query to get the Order_items
                     
                     $item_details = array();
@@ -261,7 +258,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
 
                     $results_order_item_details = $wpdb->get_results( $query_order_item_details, 'ARRAY_A' );
                     $results_order_item_details_count = $wpdb->num_rows;
-
                     if( $results_order_item_details_count > 0 ){
                         
                         $order_items = array();
@@ -275,7 +271,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $order_items[$detail['id']][$detail['meta_key']] = $detail['meta_value'];
                         }
                         
-                        
                         //Code for Data Mapping as per Certus
                         foreach( $results_order_details as $order_detail ){
 
@@ -286,6 +281,8 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $timeInGMT = date('h:i:s A', (int)strtotime($date_gmt));
                             $datetimeInGMT = date('Y-m-d h:i:s A', (int)strtotime($date_gmt));
                             
+                            $order_status_display = $order_status[$order_detail['term_taxonomy_id']];
+                            /*
                             if ($order_status[$order_detail['term_taxonomy_id']] == "on-hold" || $order_status[$order_detail['term_taxonomy_id']] == "pending" || $order_status[$order_detail['term_taxonomy_id']] == "failed") {
                                     $order_status_display = 'Pending';
                             } else if ($order_status[$order_detail['term_taxonomy_id']] == "completed" || $order_status[$order_detail['term_taxonomy_id']] == "processing" || $order_status[$order_detail['term_taxonomy_id']] == "refunded") {
@@ -293,7 +290,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             } else if ($order_status[$order_detail['term_taxonomy_id']] == "cancelled") {
                                     $order_status_display = 'Cancelled';
                             }
-
+                            */
                             // $response['date_time'] = $date_gmt;
                             $response['customer_name'] = $order_items[$order_id]['_billing_first_name'] . ' ' . $order_items[$order_id]['_billing_last_name'];
                             $response['shipping_address'] = 'Address';
@@ -333,8 +330,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             //$response ['Zip_Postal_Code'] = isset( $order_items[$order_id]['_billing_postcode'] ) ? $order_items[$order_id]['_billing_postcode'] : '';
                             //$response ['Country'] = isset( $order_items[$order_id]['_billing_country'] ) ? $order_items[$order_id]['_billing_country'] : '';
                             //$response ['Contact_Phone_Number'] = isset( $order_items[$order_id]['_billing_phone']) ? $order_items[$order_id]['_billing_phone'] : '';
-
-                            if((! empty($params['order_id'])) && $order_status[$order_detail['term_taxonomy_id']] == "refunded") {
+                            if((! empty($params['order_id'])) && $order_status[$order_detail['term_taxonomy_id']] == "OUT_FULFILLMENT") {
 /*
                                 $date_gmt_modified = $order_detail['modified_date'];
 
@@ -408,8 +404,9 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                   $delivery_items_attributes[] = $order_item;
                                 }
                               $response ['delivery_items_attributes'] = $delivery_items_attributes;
-                              $transactions ['delivery'] = $response;
+                              $transactions_data ['delivery'] = $response;
                             }
+                            $transactions[] = $transactions_data;
                         }
                     } else {
                         

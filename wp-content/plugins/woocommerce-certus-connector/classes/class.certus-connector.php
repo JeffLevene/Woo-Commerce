@@ -186,20 +186,18 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
 
             //Getting the data from ecommerce plugins
             $params = apply_filters( 'certus_connector_get_orders', $params );
-            
+            $count = 0;
             // Check if all orders are received...
             foreach ( (array) $params as $connector => $orders ) {
-                
                 // Send one batch to the server
                 if (!empty($orders['data']) && is_array($orders['data']) && count($orders['data']) > 0)  {
                     
                     $count += $orders['count'];
                     $start_limit = $this->batch_size + $orders['last_start_limit'];
-                    
-                    $post_result = $this->post_orders_to_certus( $orders['data'] );
+                    foreach($orders['data'] as $orderpost) 
+                    $post_result = $this->post_orders_to_certus( $orderpost );
                     
                     $error_response= array();
-                    
                     if (is_wp_error( $post_result ) ) {
                         $error_response[ $connector ]['status'] = 'ERR'; 
                         $error_response[ $connector ]['message'] = $post_result->get_error_message();
@@ -208,7 +206,6 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
                         $response['results'][ $connector ] = array('status' => 'OK', 'start_limit' => $start_limit );
                     }
                 }
-
                 if ( $count < $this->batch_size ) {
                     $all_done = true;
                 } else {
@@ -227,6 +224,7 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
         }
 
         public function post_orders_to_certus ( &$orders ) {
+          var_dump($orders);
             if (empty($orders)) {
                 return true;
             }
