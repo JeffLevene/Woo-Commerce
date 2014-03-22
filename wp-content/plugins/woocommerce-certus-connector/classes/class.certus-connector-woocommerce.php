@@ -415,7 +415,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                         $order_count = (is_array($results_order_details)) ? count($results_order_details) : 0 ;              
                         $params[ $this->name ] = array('count' => $order_count, 'last_start_limit' => $start_limit, 'data' => $transactions );
                     } else {
-                        $params['data'] = $transactions;
+                        $params['data'] = $transactions[0];
                     }
                     
              } else {

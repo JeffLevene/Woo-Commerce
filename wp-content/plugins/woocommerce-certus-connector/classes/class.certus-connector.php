@@ -224,7 +224,6 @@ if ( ! class_exists( 'Certus_Connector' ) ) {
         }
 
         public function post_orders_to_certus ( &$orders ) {
-          var_dump($orders);
             if (empty($orders)) {
                 return true;
             }
