@@ -308,6 +308,10 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $response['order_grand_total'] = $order_total;
                             $response['order_status'] = ucfirst( $order_status_display );
                             $response['payment_amount'] = $order_total;
+                            //TODO please update for payment_id and payment_card_token
+                            $response['payment_id'] = '12';
+                            $response['payment_card_token'] = 'PAYMENT_CARD_TOKEN';
+                            
                             
                             //$response ['Type'] = 'Shopping Cart Payment Received';
 
@@ -365,7 +369,10 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                         $order_item ['client_sku'] = (isset( $products_sku[$cart_item['_product_id']] )) ? $products_sku[$cart_item['_product_id']] : $cart_item['_product_id'];
                                         $product_id = $cart_item['_product_id'];
                                     }
-
+                                    
+                          
+                                    //TODO please update Delivery items client_sku should match store_sku
+                                    $order_item ['store_sku'] = $order_item ['client_sku'];
                                     
                                     $order_item ['price'] = round ( $cart_item['_line_total'], 2 );
                                     $order_item ['quantity'] = $cart_item['_qty'];
@@ -404,6 +411,9 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                   $delivery_items_attributes[] = $order_item;
                                 }
                               $response ['delivery_items_attributes'] = $delivery_items_attributes;
+                              //TODO order_sku_count match delivery_items count
+                              $response['order_sku_count'] = count($delivery_items_attributes);
+                             
                               $transactions_data ['delivery'] = $response;
                             }
                             $transactions[] = $transactions_data;
