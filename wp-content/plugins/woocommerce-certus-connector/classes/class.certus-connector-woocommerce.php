@@ -34,7 +34,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
         public function get_orders( $params )  {
             global $wpdb;
             $orders = array();
-
+            $site_url = get_site_url();
             //Code to get the last order sent
             
             $cond = '';
@@ -297,7 +297,7 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                             $response['customer_email'] = $order_items[$order_id]['_billing_email'];
                             $response['placed_at'] = $datetimeInGMT;
                             $response['desired_delivery_window'] = '';
-                            $response['client_id'] = '222';
+                            $response['client_id'] = strlen($site_url); //TODO need to be a real client ID
                             $response['store_id'] = '111';
                             $response['order_piece_count'] = $item_details[$order_id]['tot_qty'];
                             $response['order_id'] = $order_id;
