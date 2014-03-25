@@ -8,6 +8,16 @@
 
 add_action( 'plugins_loaded', 'woocommerce_certus_connector_pre_init' );
 
+if ( ! wp_next_scheduled('resend_order_event_hook') ) {
+	wp_schedule_event( time(), 'minutely', 'resend_order_event_hook' ); // hourly, daily and twicedaily
+}
+add_action( 'resend_order_event_hook', 'resend_order' );
+function resend_order() {
+  // do something every hour
+  woocommerce_certus_connector_init();
+  $GLOBALS['certus_connector']->send_batch();
+}
+
 function woocommerce_certus_connector_pre_init () {
 
 	// Simple check for WooCommerce being active...
