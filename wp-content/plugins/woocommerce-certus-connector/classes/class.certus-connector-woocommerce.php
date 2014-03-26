@@ -161,7 +161,6 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                         }
                         
                     }
-
                     //Query to get the variation Attributes
 
                     if (!empty($variation_ids)) {
@@ -369,8 +368,8 @@ if ( ! class_exists( 'WooCommerce_Certus_Connector' ) ) {
                                         $order_item ['client_sku'] = (isset( $products_sku[$cart_item['_product_id']] )) ? $products_sku[$cart_item['_product_id']] : $cart_item['_product_id'];
                                         $product_id = $cart_item['_product_id'];
                                     }
-                                    
-                          
+                                    $location_value = wc_get_product_terms($product_id, 'pa_location', array( 'fields' => 'slugs' ));                                   
+                                    $order_item['location'] = array_shift($location_value);
                                     //TODO please update Delivery items client_sku should match store_sku
                                     $order_item ['store_sku'] = $order_item ['client_sku'];
                                     
